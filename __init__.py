@@ -23,7 +23,7 @@ from .oioptimize import (
     optimize_sparco_parameters
 )
 from .vis_functions import visibility_ud
-from .create_oifits import (
+from .writeoifits import (
     NoiseConfig,
     project_baseline_to_uv,
     generate_uv_sampling,

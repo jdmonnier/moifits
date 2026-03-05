@@ -5,7 +5,10 @@ This code is adapted from the Julia OITOOLS package written by Fabien Baron, fre
 
 import numpy as np
 import finufft
-from .readoifits import OIData
+try:
+    from .readoifits import OIData
+except ImportError:  # Allow direct module import from scripts in moifits/testing
+    from readoifits import OIData
 
 class NFFTPlan:
     def __init__(self, uv_points, nx, pixsize_mas):

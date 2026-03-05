@@ -11,8 +11,12 @@ from typing import Callable, Dict, Iterable
 
 import numpy as np
 
-from .create_oifits import NoiseConfig, create_oifits_from_model, sample_model_observables
-from .oichi2 import NFFTPlan
+try:
+    from .writeoifits import NoiseConfig, create_oifits_from_model, sample_model_observables
+    from .oichi2 import NFFTPlan
+except ImportError:  # Allow direct module import from scripts in moifits/testing
+    from writeoifits import NoiseConfig, create_oifits_from_model, sample_model_observables
+    from oichi2 import NFFTPlan
 
 
 def image_to_cvis_grid(
