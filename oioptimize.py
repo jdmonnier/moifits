@@ -383,7 +383,6 @@ def chi2_sparco_fg(x_combined, g_combined, ftplan, data, nparams, verbose=True, 
             nfft_adjoint(ftplan[4], g2, real_output=False) +
             nfft_adjoint(ftplan[5], g3, real_output=False)
         )
-        #print(f"||g_t3phi|| = {np.linalg.norm(g_t3phi):.6e}")
     else:
         print("No T3phi data; skipping gradient computation for T3phi.")
 

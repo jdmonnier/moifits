@@ -814,10 +814,6 @@ def readoifits(filename,
         # Build UV coverage and create OIData
         data = _build_oidata(filename, vis_data, v2_data, t3_data)
         
-        # Debug: print UV count before filtering
-        if False:  # Set to True for debugging
-            print(f"[DEBUG] After parsing: nV2={data.nv2}, nT3={data.nt3phi}, nUV={data.nuv}")
-        
         # Apply filtering
         if filter_bad_data:
             bad_indices = set_data_filter(data, filter_bad_data=True, **filter_kwargs)
