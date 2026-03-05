@@ -3,6 +3,8 @@ OITOOLS - Python interferometry tools for optical interferometry data.
 
 Pure Python implementation of NFFT-based image reconstruction for 
 optical/infrared interferometry.
+
+Adapted from the Julia based OITOOLS.jl package by Fabien Baron.
 """
 
 from .readoifits import readoifits
