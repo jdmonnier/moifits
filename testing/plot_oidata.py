@@ -9,6 +9,7 @@ Usage:
 
 import argparse
 import sys
+import time
 from pathlib import Path
 
 import matplotlib.pyplot as plt
@@ -62,11 +63,13 @@ def main() -> None:
         raise FileNotFoundError(f"OIFITS file not found: {args.oifits_file}")
 
     color_by = None if args.color_by == "none" else args.color_by
+    t0 = time.perf_counter()
     data = readoifits(
         str(args.oifits_file),
         filter_bad_data=not args.no_filter,
         redundance_remove=not args.no_redundance_remove,
     )
+    print(f"[timing] readoifits: {time.perf_counter() - t0:.3f} s")
     fig, _ = plot_observables_overview(
         data,
         color_by=color_by,

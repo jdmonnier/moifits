@@ -16,7 +16,9 @@ import numpy as np
 from astropy.io import fits
 
 
-ComplexVisibilityModel = Callable[[np.ndarray, np.ndarray, float], np.ndarray]
+ComplexVisibilityFn = Callable[[np.ndarray, np.ndarray, float], np.ndarray]
+# Backward-compatible alias kept for existing imports/usages.
+ComplexVisibilityModel = ComplexVisibilityFn
 
 
 @dataclass
@@ -144,7 +146,7 @@ def generate_uv_sampling(
 
 
 def _evaluate_cvis_grid(
-    model_cvis: ComplexVisibilityModel,
+    cvis_fn: ComplexVisibilityFn,
     ucoord_m: np.ndarray,
     vcoord_m: np.ndarray,
     wavelengths_m: np.ndarray,
@@ -156,7 +158,7 @@ def _evaluate_cvis_grid(
     for iw, lam in enumerate(wavelengths_m):
         u_lam = ucoord_m / lam
         v_lam = vcoord_m / lam
-        cvis[:, iw] = np.asarray(model_cvis(u_lam, v_lam, float(lam)), dtype=np.complex128)
+        cvis[:, iw] = np.asarray(cvis_fn(u_lam, v_lam, float(lam)), dtype=np.complex128)
     return cvis
 
 
@@ -195,8 +197,10 @@ def sample_model_observables(
     wavelengths_m = np.asarray(wavelengths_m, dtype=float)
     rng = np.random.default_rng(noise.seed) if noise.add_noise else None
 
+    cvis_fn = model_cvis
+
     vis_cvis = _evaluate_cvis_grid(
-        model_cvis,
+        cvis_fn,
         sampling["vis_ucoord"],
         sampling["vis_vcoord"],
         wavelengths_m,
@@ -210,19 +214,19 @@ def sample_model_observables(
     vis2, vis2_err = _add_noise_and_errors(vis2, noise.v2_err, rng, noise.add_noise)
 
     cvis1 = _evaluate_cvis_grid(
-        model_cvis,
+        cvis_fn,
         sampling["t3_u1coord"],
         sampling["t3_v1coord"],
         wavelengths_m,
     )
     cvis2 = _evaluate_cvis_grid(
-        model_cvis,
+        cvis_fn,
         sampling["t3_u2coord"],
         sampling["t3_v2coord"],
         wavelengths_m,
     )
     cvis3 = _evaluate_cvis_grid(
-        model_cvis,
+        cvis_fn,
         sampling["t3_u1coord"] + sampling["t3_u2coord"],
         sampling["t3_v1coord"] + sampling["t3_v2coord"],
         wavelengths_m,
@@ -433,4 +437,3 @@ __all__ = [
     "sample_model_observables",
     "create_oifits_from_model",
 ]
-

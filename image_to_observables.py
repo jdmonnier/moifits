@@ -47,14 +47,14 @@ def image_to_cvis_grid(
     if ucoord_m.shape != vcoord_m.shape:
         raise ValueError("ucoord_m and vcoord_m must have the same shape")
 
-    model_cvis = make_image_cvis_model(
+    image_cvis_fn = make_image_cvis_model(
         image=image,
         pixsize_mas=pixsize_mas,
         normalize=normalize,
     )
     cvis = np.zeros((ucoord_m.size, wavelengths_m.size), dtype=np.complex128)
     for iw, lam in enumerate(wavelengths_m):
-        cvis[:, iw] = model_cvis(ucoord_m / lam, vcoord_m / lam, float(lam))
+        cvis[:, iw] = image_cvis_fn(ucoord_m / lam, vcoord_m / lam, float(lam))
     return cvis
 
 
@@ -72,7 +72,7 @@ def make_image_cvis_model(
         normalize: Normalize image flux to 1 before FT.
 
     Returns:
-        model_cvis(u_lam, v_lam, wavelength_m) -> complex visibility array
+        image_cvis_fn(u_lam, v_lam, wavelength_m) -> complex visibility array
     """
     img = np.asarray(image, dtype=float)
     if img.ndim == 1:
@@ -86,13 +86,13 @@ def make_image_cvis_model(
     model_image = img / np.sum(img) if normalize else img.copy()
     nx = model_image.shape[0]
 
-    def model_cvis(u_lam: np.ndarray, v_lam: np.ndarray, wavelength_m: float) -> np.ndarray:
+    def image_cvis_fn(u_lam: np.ndarray, v_lam: np.ndarray, wavelength_m: float) -> np.ndarray:
         del wavelength_m  # Included for signature compatibility.
         uv = np.vstack([np.asarray(u_lam, dtype=float), np.asarray(v_lam, dtype=float)])
         plan = NFFTPlan(uv, nx, pixsize_mas)
         return plan.forward(model_image)
 
-    return model_cvis
+    return image_cvis_fn
 
 
 def sample_image_observables(
@@ -117,13 +117,13 @@ def sample_image_observables(
     Returns:
         Observable dictionary compatible with create_oifits writers.
     """
-    model_cvis = make_image_cvis_model(
+    image_cvis_fn = make_image_cvis_model(
         image=image,
         pixsize_mas=pixsize_mas,
         normalize=normalize,
     )
     return sample_model_observables(
-        model_cvis=model_cvis,
+        model_cvis=image_cvis_fn,
         sampling=sampling,
         wavelengths_m=wavelengths_m,
         noise=noise,
@@ -151,14 +151,14 @@ def create_oifits_from_image(
     """
     Convenience wrapper: create synthetic OIFITS directly from an image.
     """
-    model_cvis = make_image_cvis_model(
+    image_cvis_fn = make_image_cvis_model(
         image=image,
         pixsize_mas=pixsize_mas,
         normalize=normalize,
     )
     return create_oifits_from_model(
         output_path=output_path,
-        model_cvis=model_cvis,
+        model_cvis=image_cvis_fn,
         station_enu_m=station_enu_m,
         hour_angles_rad=hour_angles_rad,
         dec_rad=dec_rad,

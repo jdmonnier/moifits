@@ -5,6 +5,7 @@ This code is adapted from the Julia OITOOLS package written by Fabien Baron, fre
 
 import numpy as np
 import finufft
+import os
 try:
     from .readoifits import OIData
 except ImportError:  # Allow direct module import from scripts in moifits/testing
@@ -20,16 +21,33 @@ class NFFTPlan:
         xx, yy = np.meshgrid(coords, coords, indexing="ij")
         self.x = xx.ravel()
         self.y = yy.ravel()
+        self.nthreads = self._choose_nthreads()
+
+    def _choose_nthreads(self):
+        env_nthreads = os.environ.get("FINUFFT_NTHREADS") or os.environ.get("OMP_NUM_THREADS")
+        if env_nthreads:
+            try:
+                return max(1, int(env_nthreads))
+            except ValueError:
+                pass
+
+        cpu_threads = os.cpu_count() or 1
+        nsrc = self.x.size
+        ntrg = self.uv_points.shape[1]
+        workload = nsrc + ntrg
+        if workload < 50_000:
+            return 1
+        if workload < 200_000:
+            return min(cpu_threads, 4)
+        return cpu_threads
 
     def forward(self, image):
         u, v = self.uv_points  # already flipped in __init__
         I = np.asarray(image, np.complex128).ravel()
-        # Use nthreads=1 to avoid OpenMP threading issues on macOS
-        # TODO: Figure out how to set nthreads properly
         vis = finufft.nufft2d3(
             self.x, self.y, I,
             2*np.pi*u, 2*np.pi*v,
-            isign=-1, eps=1e-12, nthreads=1
+            isign=-1, eps=1e-12, nthreads=self.nthreads
         )
         return vis
 
@@ -129,12 +147,11 @@ def nfft_adjoint(plan, vis, real_output=True):
     This swaps the role of spatial and frequency coordinates.
     """
     u, v = plan.uv_points
-    # Use nthreads=1 to avoid OpenMP threading issues on macOS
     img_flat = finufft.nufft2d3(
         2*np.pi*u, 2*np.pi*v,
         vis.astype(np.complex128),
         plan.x, plan.y,
-        isign=1, eps=1e-12, nthreads=1
+        isign=1, eps=1e-12, nthreads=plan.nthreads
     )
     return np.real(img_flat.reshape(plan.nx, plan.nx)) if real_output else img_flat.reshape(plan.nx, plan.nx)
 

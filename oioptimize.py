@@ -4,9 +4,8 @@ This code is adapted from the Julia OITOOLS package written by Fabien Baron, fre
 
 import torch
 import numpy as np
-from .oichi2 import image_to_vis, vis_to_v2, vis_to_t3, mod360, nfft_adjoint
-from .vis_functions import visibility_ud, dvisibility_ud
-from scipy.special import j0, j1
+from oichi2 import image_to_vis, vis_to_v2, vis_to_t3, mod360, nfft_adjoint
+from vis_functions import visibility_ud, dvisibility_ud
 
 def chi2_sparco_f(x, params, ftplan, data, verbose=True, weights=[1.0, 1.0, 1.0]):
     """
