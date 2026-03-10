@@ -52,7 +52,7 @@ class NFFTPlan:
         return vis
 
 def setup_nfft(data, nx, pixsize):
-    uv = data.uv      # already in λ⁻¹
+    uv = data.uv      # already in λ^-1
     return [NFFTPlan(uv, nx, pixsize),
             NFFTPlan(uv[:, data.indx_vis], nx, pixsize),
             NFFTPlan(uv[:, data.indx_v2], nx, pixsize),

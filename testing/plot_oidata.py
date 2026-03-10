@@ -70,6 +70,11 @@ def main() -> None:
         redundance_remove=not args.no_redundance_remove,
     )
     print(f"[timing] readoifits: {time.perf_counter() - t0:.3f} s")
+    print(
+        "[counts] "
+        f"VISAMP: {data.nvisamp} | VISPHI: {data.nvisphi} | "
+        f"VIS2: {data.nv2} | T3AMP: {data.nt3amp} | T3PHI: {data.nt3phi}"
+    )
     fig, _ = plot_observables_overview(
         data,
         color_by=color_by,
