@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "moifits"
+version = "1.0.0"
+description = "Michigan OI-FITS Tools"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+authors = [
+    { name = "Michigan OI-FITS Tools contributors" },
+]
+dependencies = [
+    "astropy",
+    "finufft",
+    "matplotlib",
+    "numpy",
+    "scipy",
+    "torch",
+]
+
+[project.optional-dependencies]
+examples = [
+    "corner",
+    "emcee",
+]
+gpu = [
+    "cufinufft",
+]
+test = [
+    "pytest",
+]
+
+[project.scripts]
+moifits-generate-model = "moifits.cli.generate_ring:main"
+moifits-generate-ring = "moifits.cli.generate_ring:main"
+moifits-image-to-oifits = "moifits.cli.image_to_oifits:main"
+moifits-compare-image = "moifits.cli.compare_image_oifits:main"
+moifits-plot = "moifits.cli.plot:main"
+moifits-show = "moifits.cli.show:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

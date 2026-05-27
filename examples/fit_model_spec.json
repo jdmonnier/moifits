@@ -1,0 +1,32 @@
+{
+  "normalize": true,
+  "sparco": {
+    "lambda_0": 1.65e-6,
+    "star": {
+      "flux": {"value": 0.4, "fixed": false, "bounds": [0.0, 0.95]},
+      "diameter": {"value": 0.0, "fixed": true},
+      "spectral_index": {"value": -4.0, "fixed": false, "bounds": [-6.0, 2.0]}
+    },
+    "halo": {
+      "flux": {"value": 0.0, "fixed": true},
+      "spectral_index": {"value": 0.0, "fixed": true},
+      "visibility": {"value": 0.0, "fixed": true}
+    }
+  },
+  "components": [
+    {
+      "name": "ring",
+      "kind": "elliptical-ring",
+      "flux": {"value": 0.6, "fixed": false, "bounds": [0.0, 1.0]},
+      "spectral_index": {"value": 0.0, "fixed": false, "bounds": [-6.0, 6.0]},
+      "params": {
+        "radius": {"value": 4.0, "fixed": false, "bounds": [0.1, 7.5]},
+        "width": {"value": 1.0, "fixed": false, "bounds": [0.05, 4.0]},
+        "axis_ratio": {"value": 0.8, "fixed": false, "bounds": [0.1, 1.0]},
+        "pa_deg": {"value": 0.0, "fixed": false, "bounds": [0.0, 180.0]},
+        "x0": 0.0,
+        "y0": 0.0
+      }
+    }
+  ]
+}
